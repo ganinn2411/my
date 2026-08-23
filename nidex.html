@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>عبد الغني مشاعل — مطوّر واجهات أمامية</title>
+<meta name="description" content="عبد الغني مشاعل — مطوّر واجهات أمامية، ستة أنظمة ويب حية مبنية من الصفر.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef6fc;
+    --bg-raise:#05070a;
+    --surface:rgba(255,255,255,0.55);
+    --surface-solid:#ffffff;
+    --surface-2:rgba(255,255,255,0.38);
+    --line:rgba(10,25,40,0.08);
+    --line-strong:rgba(10,25,40,0.18);
+    --text:#0A0E14;
+    --text-dim:#3C4753;
+    --text-faint:#8996A3;
+    --violet:#0A84FF;
+    --violet-2:#0066CC;
+    --cyan:#5AC8FA;
+    --coral:#0A0E14;
+    --grad-brand:linear-gradient(120deg,#0055D4 0%, #0A84FF 50%, #5AC8FA 100%);
+    --grad-warm:linear-gradient(120deg,#001B44 0%, #0A84FF 100%);
+    --font-ar:'IBM Plex Sans Arabic',sans-serif;
+    --font-lat-display:'Space Grotesk',sans-serif;
+    --font-lat-body:'Inter',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+    --max:1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  html[dir="rtl"] body{font-family:var(--font-ar);}
+  html[dir="ltr"] body{font-family:var(--font-lat-body);}
+  html[dir="ltr"] h1.name,
+  html[dir="ltr"] h2.section-title,
+  html[dir="ltr"] .footer-name,
+  html[dir="ltr"] .card-title,
+  html[dir="ltr"] .brand span:last-child{font-family:var(--font-lat-display);}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 620px at 12% -8%, #ffffff 0%, transparent 55%),
+      radial-gradient(1000px 700px at 100% 10%, #d6ecfb 0%, transparent 60%),
+      linear-gradient(180deg, #f5fafd 0%, #e7f2fb 45%, #dbecf9 100%);
+    color:var(--text);
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    position:relative;
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:64px 64px;
+    opacity:0.5;
+    -webkit-mask-image:radial-gradient(ellipse 90% 60% at 50% 0%, black 0%, transparent 72%);
+    mask-image:radial-gradient(ellipse 90% 60% at 50% 0%, black 0%, transparent 72%);
+  }
+  a{color:inherit;}
+  .wrap{max-width:var(--max);margin:0 auto;padding-inline:24px;position:relative;z-index:1;}
+  :focus-visible{outline:2px solid var(--violet-2);outline-offset:3px;}
+
+  /* ---------- scroll progress ---------- */
+  .scroll-progress{position:fixed;top:0;inset-inline:0;height:3px;z-index:40;background:rgba(10,25,40,0.05);}
+  .scroll-progress span{display:block;height:100%;width:0%;background:var(--grad-brand);box-shadow:0 0 12px 0 rgba(10,132,255,0.6);transition:width .1s linear;}
+
+  /* ---------- aurora background (signature element) ---------- */
+  .aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .aurora span{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(100px);
+    opacity:0.32;
+    will-change:transform;
+  }
+  .aurora .a1{width:560px;height:560px;background:var(--violet);top:-180px;inset-inline-start:-120px;animation:drift1 16s ease-in-out infinite;opacity:0.22;}
+  .aurora .a2{width:480px;height:480px;background:var(--cyan);top:120px;inset-inline-end:-160px;animation:drift2 19s ease-in-out infinite;opacity:0.30;}
+  .aurora .a3{width:420px;height:420px;background:#ffffff;bottom:-160px;inset-inline-start:30%;animation:drift3 17s ease-in-out infinite;opacity:0.55;}
+  .aurora .a4{width:320px;height:320px;background:var(--cyan);top:40%;inset-inline-start:55%;animation:drift4 21s ease-in-out infinite;opacity:0.2;}
+  @keyframes drift1{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(90px,60px) scale(1.12);}66%{transform:translate(-40px,90px) scale(0.94);}}
+  @keyframes drift2{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(-80px,70px) scale(1.15);}66%{transform:translate(40px,-50px) scale(0.92);}}
+  @keyframes drift3{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(60px,-70px) scale(1.1);}}
+  @keyframes drift4{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-70px,-60px) scale(1.2);}}
+
+  /* ---------- reveal on scroll ---------- */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1);}
+  .reveal.in-view{opacity:1;transform:translateY(0);}
+
+  /* ---------- top bar ---------- */
+  header.top{
+    position:sticky;top:0;z-index:20;
+    background:rgba(255,255,255,0.55);
+    backdrop-filter:blur(20px) saturate(160%);
+    -webkit-backdrop-filter:blur(20px) saturate(160%);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding-block:16px;gap:16px;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:14px;letter-spacing:0.02em;color:var(--text);text-decoration:none;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--grad-brand);flex:none;box-shadow:0 0 0 0 rgba(10,132,255,0.45);animation:pulse 2.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(10,132,255,0.4);}50%{box-shadow:0 0 0 6px rgba(10,132,255,0);}}
+  .langs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px;backdrop-filter:blur(6px);}
+  .lang-pill{
+    font-family:var(--font-mono);
+    font-size:12px;
+    padding:6px 13px;
+    border-radius:999px;
+    background:transparent;
+    border:none;
+    color:var(--text-dim);
+    cursor:pointer;
+    transition:color .2s ease;
+  }
+  .lang-pill.active{background:var(--grad-brand);color:#ffffff;font-weight:700;}
+  .lang-pill:hover:not(.active){color:var(--text);}
+
+  /* ---------- hero ---------- */
+  section.hero{padding-block:84px 60px;position:relative;}
+  .hero-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:56px;align-items:start;}
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:0.08em;
+    color:var(--cyan);
+    text-transform:uppercase;
+    display:flex;align-items:center;gap:8px;
+    margin-block-end:22px;
+  }
+  .eyebrow .bar{width:22px;height:1px;background:var(--grad-brand);}
+  h1.name{
+    font-size:clamp(36px,5.2vw,60px);
+    line-height:1.1;
+    font-weight:700;
+    margin:0 0 12px;
+    letter-spacing:-0.01em;
+  }
+  .role{
+    font-size:clamp(18px,2.3vw,22px);
+    color:var(--text-dim);
+    font-weight:500;
+    margin:0 0 22px;
+  }
+  .role .accent{
+    background:var(--grad-brand);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    font-weight:700;
+  }
+  p.statement{font-size:16px;color:var(--text-dim);max-width:52ch;margin:0 0 28px;}
+  .status-line{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:30px;}
+  .status-chip{
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    color:var(--text-dim);
+    background:var(--surface);
+    border:1px solid var(--line);
+    padding:7px 12px;
+    border-radius:8px;
+    display:flex;align-items:center;gap:7px;
+    backdrop-filter:blur(6px);
+  }
+  .status-chip .lv{width:6px;height:6px;border-radius:50%;background:var(--cyan);flex:none;}
+
+  .hero-cta{display:flex;flex-wrap:wrap;gap:12px;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--font-mono);
+    font-size:13.5px;font-weight:600;
+    padding:13px 22px;
+    border-radius:10px;
+    text-decoration:none;
+    cursor:pointer;
+    border:1px solid transparent;
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .btn-primary{
+    background:var(--grad-brand);
+    color:#ffffff;
+    box-shadow:0 8px 24px -8px rgba(10,132,255,0.35);
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 30px -8px rgba(10,132,255,0.45);}
+  .btn-ghost{
+    background:var(--surface);
+    color:var(--text);
+    border-color:var(--line-strong);
+    backdrop-filter:blur(6px);
+  }
+  .btn-ghost:hover{border-color:var(--violet-2);transform:translateY(-2px);}
+  .btn svg{width:15px;height:15px;transition:transform .15s ease;}
+  html[dir="rtl"] .btn svg{transform:scaleX(-1);}
+  .btn:hover svg{transform:translateX(3px);}
+  html[dir="rtl"] .btn:hover svg{transform:scaleX(-1) translateX(3px);}
+
+  /* readout panel */
+  .readout{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    box-shadow:0 20px 60px -30px rgba(0,0,0,0.6);
+  }
+  .readout-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:13px 16px;
+    border-bottom:1px solid var(--line);
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-faint);
+    letter-spacing:0.05em;
+  }
+  .readout-head .traffic{display:flex;gap:6px;}
+  .readout-head .traffic span{width:8px;height:8px;border-radius:50%;background:var(--line-strong);}
+  .readout-head .traffic span:nth-child(1){background:var(--text-faint);opacity:.5;}
+  .readout-head .traffic span:nth-child(2){background:var(--violet);opacity:.6;}
+  .readout-head .traffic span:nth-child(3){background:var(--cyan);opacity:.8;}
+  .readout-body{padding:6px 4px;}
+  .stat-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:17px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  .stat-row:last-child{border-bottom:none;}
+  .stat-label{font-size:13.5px;color:var(--text-dim);}
+  .stat-value{font-family:var(--font-mono);font-size:23px;font-weight:600;color:var(--text);}
+  .stat-value.amber{color:var(--coral);}
+  .stat-value.cyan{color:var(--cyan);}
+
+  /* ---------- section headers ---------- */
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-block-end:34px;flex-wrap:wrap;}
+  h2.section-title{font-size:clamp(25px,3vw,34px);font-weight:700;margin:0;letter-spacing:-0.01em;}
+  .section-note{font-family:var(--font-mono);font-size:12px;color:var(--text-faint);}
+
+  section.projects{padding-block:40px 80px;position:relative;}
+
+  /* ---------- project cards ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:22px;}
+  .card{
+    background:var(--surface);
+    border:1px solid rgba(255,255,255,0.6);
+    border-radius:20px;
+    overflow:hidden;
+    display:flex;flex-direction:column;
+    backdrop-filter:blur(22px) saturate(160%);
+    -webkit-backdrop-filter:blur(22px) saturate(160%);
+    box-shadow:0 8px 32px -16px rgba(10,25,40,0.18);
+    transition:border-color .25s ease, transform .25s ease, box-shadow .25s ease;
+    position:relative;
+  }
+  .card:hover{
+    border-color:rgba(255,255,255,0.85);
+    transform:translateY(-5px);
+    box-shadow:0 24px 50px -20px rgba(10,132,255,0.35);
+  }
+  .card-chrome{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 14px;
+    background:rgba(255,255,255,0.35);
+    border-bottom:1px solid var(--line);
+  }
+  .card-chrome .traffic{display:flex;gap:5px;}
+  .card-chrome .traffic span{width:7px;height:7px;border-radius:50%;background:var(--line-strong);}
+  .card-chrome .url{
+    flex:1;
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-dim);
+    background:rgba(10,25,40,0.06);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:4px 9px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    direction:ltr;text-align:left;
+  }
+  .card-chrome .live{
+    display:flex;align-items:center;gap:5px;
+    font-family:var(--font-mono);font-size:10px;color:var(--cyan);
+    flex:none;
+  }
+  .card-chrome .live .lv{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse2 2.4s ease-in-out infinite;}
+  @keyframes pulse2{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(38,224,217,0.5);}50%{opacity:0.55;box-shadow:0 0 0 4px rgba(38,224,217,0);}}
+
+  .card-body{padding:22px;display:flex;flex-direction:column;gap:14px;flex:1;}
+  .card-icon{
+    width:42px;height:42px;border-radius:11px;
+    display:flex;align-items:center;justify-content:center;
+    color:#ffffff;
+    flex:none;
+    background:var(--grad-brand);
+  }
+  .card:nth-of-type(2) .card-icon,
+  .card:nth-of-type(5) .card-icon{background:linear-gradient(120deg,#5AC8FA,#0A84FF);}
+  .card:nth-of-type(3) .card-icon,
+  .card:nth-of-type(6) .card-icon{background:var(--grad-warm);color:#ffffff;}
+  .card-icon svg{width:21px;height:21px;}
+  h3.card-title{font-size:19.5px;font-weight:700;margin:0;}
+  .card-desc{font-size:14.5px;color:var(--text-dim);margin:0;flex:1;}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;}
+  .tag{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-dim);
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    padding:4px 9px;
+    border-radius:6px;
+  }
+  .card-footer{
+    padding:16px 22px;
+    border-top:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .visit{
+    font-size:13.5px;font-weight:700;color:var(--violet-2);text-decoration:none;
+    display:flex;align-items:center;gap:6px;
+  }
+  .visit svg{width:14px;height:14px;transition:transform .15s ease;}
+  html[dir="rtl"] .visit svg{transform:scaleX(-1);}
+  .visit:hover svg{transform:translateX(3px);}
+  html[dir="rtl"] .visit:hover svg{transform:scaleX(-1) translateX(3px);}
+  .card-tag-role{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);}
+
+  /* ---------- about ---------- */
+  section.about{padding-block:20px 76px;position:relative;}
+  .about-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:stretch;}
+  .about-card{
+    background:var(--surface);
+    border:1px solid rgba(255,255,255,0.6);
+    border-radius:20px;
+    padding:28px;
+    backdrop-filter:blur(22px) saturate(160%);
+    -webkit-backdrop-filter:blur(22px) saturate(160%);
+    box-shadow:0 8px 32px -16px rgba(10,25,40,0.18);
+  }
+  .about-text{font-size:15.5px;color:var(--text-dim);margin:0;}
+  .about-subhead{
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    margin:0 0 14px;
+  }
+  .skill-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;}
+  .skill-chip{
+    font-family:var(--font-mono);
+    font-size:12px;
+    color:var(--text-dim);
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    padding:6px 12px;
+    border-radius:8px;
+  }
+  .lang-bars{display:flex;flex-direction:column;gap:16px;}
+  .lang-bar-head{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;color:var(--text-dim);margin-bottom:7px;}
+  .lang-bar-head b{font-family:var(--font-mono);font-weight:600;color:var(--text);}
+  .lang-bar-track{height:6px;border-radius:999px;background:var(--line);overflow:hidden;}
+  .lang-bar-fill{height:100%;border-radius:999px;background:var(--grad-brand);}
+
+  /* ---------- toolkit ---------- */
+  section.toolkit{padding-block:0 84px;}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;}
+  .chip{
+    font-family:var(--font-mono);
+    font-size:13px;
+    color:var(--text-dim);
+    border:1px solid var(--line);
+    padding:9px 16px;
+    border-radius:9px;
+    background:var(--surface);
+    backdrop-filter:blur(6px);
+    transition:border-color .2s ease, color .2s ease;
+  }
+  .chip:hover{border-color:var(--violet-2);color:var(--text);}
+
+  /* ---------- footer / contact ---------- */
+  footer.site{
+    border-top:1px solid rgba(255,255,255,0.1);
+    padding-block:48px;
+    background:var(--bg-raise);
+    color:#F4F8FC;
+    position:relative;
+  }
+  .footer-grid{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;}
+  .footer-name{font-weight:700;font-size:18px;margin:0 0 4px;color:#ffffff;}
+  .footer-role{font-size:13.5px;color:rgba(244,248,252,0.65);margin:0;}
+  .footer-cta{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--font-mono);
+    font-size:13px;
+    color:#ffffff;
+    background:var(--grad-brand);
+    padding:12px 22px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:700;
+    box-shadow:0 8px 24px -8px rgba(10,132,255,0.45);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .footer-cta:hover{transform:translateY(-2px);box-shadow:0 12px 30px -8px rgba(10,132,255,0.4);}
+  .footer-bottom{
+    margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.1);
+    font-family:var(--font-mono);font-size:11.5px;color:rgba(244,248,252,0.45);
+    display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;
+  }
+
+  @media (max-width:860px){
+    .hero-grid{grid-template-columns:1fr;gap:32px;}
+    .about-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width:520px){
+    .topbar{flex-wrap:wrap;}
+    section.hero{padding-block:52px 40px;}
+    .aurora .a1,.aurora .a2,.aurora .a3{filter:blur(60px);}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;scroll-behavior:auto !important;}
+    .reveal{opacity:1;transform:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" aria-hidden="true"><span id="scrollBar"></span></div>
+
+<div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span><span class="a4"></span></div>
+
+<header class="top">
+  <div class="wrap topbar">
+    <a href="#top" class="brand"><span class="dot"></span><span>abdulghani@dev</span></a>
+    <div class="langs" role="group" aria-label="Language">
+      <button class="lang-pill" data-lang="ar" onclick="setLang('ar')">عربي</button>
+      <button class="lang-pill" data-lang="en" onclick="setLang('en')">EN</button>
+      <button class="lang-pill" data-lang="tr" onclick="setLang('tr')">TR</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow reveal"><span class="bar"></span><span data-i18n="eyebrow">لوحة الأنظمة الحية</span></div>
+        <h1 class="name reveal" data-i18n="name">عبد الغني مشاعل</h1>
+        <p class="role reveal" data-i18n="role">مطوّر واجهات أمامية — أبني أنظمة ويب <span class="accent" data-i18n="roleAccent">تعمل فعليًا</span></p>
+        <p class="statement reveal" data-i18n="statement">خريج برمجة حاسوب. بدل ما أشرح شغلي بالكلام، هذه ستة مواقع وأنظمة حقيقية صممتها وبرمجتها من الصفر — من واجهة المستخدم إلى قاعدة البيانات.</p>
+        <div class="status-line reveal">
+          <span class="status-chip"><span class="lv"></span><span data-i18n="chip1">6 مشاريع منشورة</span></span>
+          <span class="status-chip"><span class="lv"></span><span>Firebase · Firestore</span></span>
+          <span class="status-chip"><span class="lv"></span><span>HTML · CSS · JavaScript</span></span>
+        </div>
+        <div class="hero-cta reveal">
+          <a class="btn btn-primary" href="https://wa.me/905550066123" target="_blank">
+            <span data-i18n="heroCta1">تواصل معي الآن</span>
+          </a>
+          <a class="btn btn-ghost" href="#projects">
+            <span data-i18n="heroCta2">شاهد المشاريع</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="readout reveal">
+        <div class="readout-head">
+          <div class="traffic"><span></span><span></span><span></span></div>
+          <span data-i18n="readoutLabel">status.log</span>
+        </div>
+        <div class="readout-body">
+          <div class="stat-row">
+            <span class="stat-label" data-i18n="stat1Label">مشاريع منشورة</span>
+            <span class="stat-value cyan" data-count="5">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label" data-i18n="stat2Label">أنظمة تعمل بـ Firebase</span>
+            <span class="stat-value amber" data-count="4">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label" data-i18n="stat3Label">لغات واجهة مدعومة</span>
+            <span class="stat-value" data-count="3">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2 class="section-title" data-i18n="aboutTitle">من أنا</h2>
+        <span class="section-note" data-i18n="aboutEyebrow">نبذة شخصية</span>
+      </div>
+      <div class="about-grid">
+        <div class="about-card reveal">
+          <p class="about-subhead" data-i18n="aboutSubhead">الملف الشخصي</p>
+          <p class="about-text" data-i18n="aboutBio">مطوّر واجهات أمامية بخلفية أكاديمية في البرمجة، أتميّز بروح تنظيمية عالية وقدرة على حل المشكلات والتكيف مع مختلف التحديات. أعمل بشكل مستقل أو ضمن فريق لتحقيق نتائج ملموسة بكفاءة ودقة، وأسعى دائمًا لتطوير مهاراتي وإضافة قيمة حقيقية لكل مشروع أعمل عليه.</p>
+          <div class="skill-chips">
+            <span class="skill-chip" data-i18n="skill1">تواصل فعّال</span>
+            <span class="skill-chip" data-i18n="skill2">حل المشكلات والتكيف السريع</span>
+            <span class="skill-chip" data-i18n="skill3">إدارة الأولويات</span>
+            <span class="skill-chip" data-i18n="skill4">العمل ضمن فريق</span>
+            <span class="skill-chip">Photoshop</span>
+            <span class="skill-chip">Word · Excel</span>
+          </div>
+        </div>
+        <div class="about-card reveal">
+          <p class="about-subhead" data-i18n="aboutLangsTitle">اللغات</p>
+          <div class="lang-bars">
+            <div class="lang-bar-row">
+              <div class="lang-bar-head"><span data-i18n="langAr">العربية</span><b>100%</b></div>
+              <div class="lang-bar-track"><div class="lang-bar-fill" style="width:100%"></div></div>
+            </div>
+            <div class="lang-bar-row">
+              <div class="lang-bar-head"><span data-i18n="langTr">التركية</span><b>100%</b></div>
+              <div class="lang-bar-track"><div class="lang-bar-fill" style="width:100%"></div></div>
+            </div>
+            <div class="lang-bar-row">
+              <div class="lang-bar-head"><span data-i18n="langEn">الإنجليزية</span><b>50%</b></div>
+              <div class="lang-bar-track"><div class="lang-bar-fill" style="width:50%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="projects" id="projects">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2 class="section-title" data-i18n="projectsTitle">مشاريع حيّة،عروض تقديمية</h2>
+        <span class="section-note" data-i18n="projectsNote">جميع الروابط أدناه تعمل الآن</span>
+      </div>
+
+      <div class="grid">
+
+        <article class="card reveal">
+          <div class="card-chrome">
+            <div class="traffic"><span></span><span></span><span></span></div>
+            <span class="url">ganinn2411.github.io/Velora_Shop</span>
+            <span class="live"><span class="lv"></span><span data-i18n="live">حي</span></span>
+          </div>
+          <div class="card-body">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"></circle><circle cx="18" cy="20" r="1.4"></circle><path d="M2 3h2l2.2 12.4a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21 7H5.4"></path></svg>
+            </div>
+            <h3 class="card-title" data-i18n="p1Title">فيلورا شوب</h3>
+            <p class="card-desc" data-i18n="p1Desc">مشروع تخرجي؛ متجر أزياء تركي متكامل بسلة شراء ومفضلة وحساب مستخدم، مربوط بلوحة تحكم إدارية كاملة.</p>
+            <div class="tags">
+              <span class="tag" data-i18n="tagEcom">E-Commerce</span>
+              <span class="tag">Firebase</span>
+              <span class="tag" data-i18n="tagResponsive">Responsive</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag-role" data-i18n="p1Role">مشروع التخرج</span>
+            <a class="visit" href="https://ganinn2411.github.io/Velora_Shop/" target="_blank" rel="noopener">
+              <span data-i18n="visitSite">زيارة الموقع</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="card reveal">
+          <div class="card-chrome">
+            <div class="traffic"><span></span><span></span><span></span></div>
+            <span class="url">ganinn2411.github.io/velora_cafe</span>
+            <span class="live"><span class="lv"></span><span data-i18n="live">حي</span></span>
+          </div>
+          <div class="card-body">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"></path></svg>
+            </div>
+            <h3 class="card-title" data-i18n="p2Title">فيلورا كافيه</h3>
+            <p class="card-desc" data-i18n="p2Desc">نظام نقاط بيع لمقهى تجريبي: دخول موظفين برمز سري، إدارة طاولات، لوحة مطبخ Kanban، وتقارير مبيعات لحظية.</p>
+            <div class="tags">
+              <span class="tag">Realtime</span>
+              <span class="tag">Kanban</span>
+              <span class="tag">Firestore</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag-role" data-i18n="p2Role">نظام نقاط بيع</span>
+            <a class="visit" href="https://ganinn2411.github.io/velora_cafe/" target="_blank" rel="noopener">
+              <span data-i18n="visitSite">زيارة الموقع</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="card reveal">
+          <div class="card-chrome">
+            <div class="traffic"><span></span><span></span><span></span></div>
+            <span class="url">ganinn2411.github.io/velora_menu</span>
+            <span class="live"><span class="lv"></span><span data-i18n="live">حي</span></span>
+          </div>
+          <div class="card-body">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v18M7 3a4 4 0 0 1 4 4v3a4 4 0 0 1-4 4"></path><path d="M17 3v7a2 2 0 1 1-4 0V3M15 3v18"></path></svg>
+            </div>
+            <h3 class="card-title" data-i18n="p3Title">قائمة فيلورا</h3>
+            <p class="card-desc" data-i18n="p3Desc">قائمة رقمية للمقهى مربوطة مباشرة بقاعدة بيانات نظام البيع، فأي تحديث في المنتجات يظهر فورًا للزبون.</p>
+            <div class="tags">
+              <span class="tag" data-i18n="tagMenu">Digital Menu</span>
+              <span class="tag">Firestore Sync</span>
+              <span class="tag" data-i18n="tagResponsive">Responsive</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag-role" data-i18n="p3Role">قائمة رقمية</span>
+            <a class="visit" href="https://ganinn2411.github.io/velora_menu/" target="_blank" rel="noopener">
+              <span data-i18n="visitSite">زيارة الموقع</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="card reveal">
+          <div class="card-chrome">
+            <div class="traffic"><span></span><span></span><span></span></div>
+            <span class="url">ganinn2411.github.io/risalett</span>
+            <span class="live"><span class="lv"></span><span data-i18n="live">حي</span></span>
+          </div>
+          <div class="card-body">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.7 6.3 6.8.6-5.1 4.6 1.6 6.7L12 17l-6 3.7 1.6-6.7-5.1-4.6 6.8-.6z"></path></svg>
+            </div>
+            <h3 class="card-title" data-i18n="p4Title">ريساليت</h3>
+            <p class="card-desc" data-i18n="p4Desc">موقع لشركة رحلات عمرة؛ يعرض تقييمات العملاء بنجوم ومؤشرات تفصيلية لبناء الثقة قبل الحجز.</p>
+            <div class="tags">
+              <span class="tag" data-i18n="tagTravel">Travel</span>
+              <span class="tag">Firebase</span>
+              <span class="tag" data-i18n="tagReviews">Reviews</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag-role" data-i18n="p4Role">شركة رحلات</span>
+            <a class="visit" href="https://ganinn2411.github.io/risalett/" target="_blank" rel="noopener">
+              <span data-i18n="visitSite">زيارة الموقع</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+            </a>
+          </div>
+        </article>
+
+        <article class="card reveal">
+          <div class="card-chrome">
+            <div class="traffic"><span></span><span></span><span></span></div>
+            <span class="url">ganinn2411.github.io/el-taractor</span>
+            <span class="live"><span class="lv"></span><span data-i18n="live">حي</span></span>
+          </div>
+          <div class="card-body">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h2M18 12h2M6 8v8M18 8v8M8 12h8"></path></svg>
+            </div>
+            <h3 class="card-title" data-i18n="p5Title">الترّاكتور</h3>
+            <p class="card-desc" data-i18n="p5Desc">موقع تدريب رياضي شخصي بالعربية RTL، بهوية بصرية صناعية وحركات تمرير مدروسة.</p>
+            <div class="tags">
+              <span class="tag" data-i18n="tagCoaching">Coaching</span>
+              <span class="tag">RTL</span>
+              <span class="tag" data-i18n="tagScroll">Scroll FX</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag-role" data-i18n="p5Role">موقع تدريب</span>
+            <a class="visit" href="https://ganinn2411.github.io/el-taractor/" target="_blank" rel="noopener">
+              <span data-i18n="visitSite">زيارة الموقع</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+            </a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="toolkit">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2 class="section-title" data-i18n="toolkitTitle">الأدوات</h2>
+      </div>
+      <div class="chips reveal">
+        <span class="chip">HTML5</span>
+        <span class="chip">CSS3</span>
+        <span class="chip">JavaScript</span>
+        <span class="chip">Firebase / Firestore</span>
+        <span class="chip">localStorage</span>
+        <span class="chip">Cloudinary</span>
+        <span class="chip">EmailJS</span>
+        <span class="chip" data-i18n="chipResponsive">تصميم متجاوب</span>
+        <span class="chip" data-i18n="chipRtl">RTL / LTR وتعدد لغات</span>
+        <span class="chip">Git · GitHub Pages</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="footer-grid reveal">
+      <div>
+        <p class="footer-name">Abdulghani Mashael</p>
+        <p class="footer-role" data-i18n="footerRole">مطوّر واجهات أمامية</p>
+      </div>
+      <a class="footer-cta" href="https://wa.me/905550066123" target="_blank">
+        <span data-i18n="footerCta">تواصل معي</span>
+      </a>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Abdulghani Mashael</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const translations = {
+  ar: {
+    eyebrow: "لوحة الأنظمة الحية",
+    name: "عبد الغني مشاعل",
+    role: "مطوّر واجهات أمامية — أبني أنظمة ويب ",
+    roleAccent: "تعمل فعليًا",
+    statement: "خريج برمجة حاسوب. بدل ما أشرح شغلي بالكلام، هذه ستة مواقع وأنظمة حقيقية صممتها وبرمجتها من الصفر — من واجهة المستخدم إلى قاعدة البيانات.",
+    chip1: "5 مشاريع منشورة",
+    heroCta1: "تواصل معي الآن",
+    heroCta2: "شاهد المشاريع",
+    readoutLabel: "status.log",
+    stat1Label: "مشاريع منشورة",
+    stat2Label: "أنظمة تعمل بـ Firebase",
+    stat3Label: "لغات واجهة مدعومة",
+    aboutEyebrow: "نبذة شخصية",
+    aboutTitle: "من أنا",
+    aboutSubhead: "الملف الشخصي",
+    aboutBio: "مطوّر واجهات أمامية بخلفية أكاديمية في البرمجة، أتميّز بروح تنظيمية عالية وقدرة على حل المشكلات والتكيف مع مختلف التحديات. أعمل بشكل مستقل أو ضمن فريق لتحقيق نتائج ملموسة بكفاءة ودقة، وأسعى دائمًا لتطوير مهاراتي وإضافة قيمة حقيقية لكل مشروع أعمل عليه.",
+    skill1: "تواصل فعّال",
+    skill2: "حل المشكلات والتكيف السريع",
+    skill3: "إدارة الأولويات",
+    skill4: "العمل ضمن فريق",
+    aboutLangsTitle: "اللغات",
+    langAr: "العربية",
+    langTr: "التركية",
+    langEn: "الإنجليزية",
+    projectsTitle: "مشاريع حيّة، لا عروض تقديمية",
+    projectsNote: "جميع الروابط أدناه تعمل الآن",
+    live: "حي",
+    visitSite: "زيارة الموقع",
+    tagEcom: "متجر إلكتروني",
+    tagMenu: "قائمة رقمية",
+    tagResponsive: "متجاوب",
+    tagTravel: "سياحة",
+    tagReviews: "تقييمات",
+    tagCoaching: "تدريب",
+    tagScroll: "تأثيرات تمرير",
+    tagAdmin: "لوحة تحكم",
+    p1Title: "فيلورا شوب",
+    p1Desc: "مشروع تخرجي؛ متجر أزياء تركي متكامل بسلة شراء ومفضلة وحساب مستخدم، مربوط بلوحة تحكم إدارية كاملة.",
+    p1Role: "مشروع التخرج",
+    p2Title: "فيلورا كافيه",
+    p2Desc: "نظام نقاط بيع لمقهى تجريبي: دخول موظفين برمز سري، إدارة طاولات، لوحة مطبخ Kanban، وتقارير مبيعات لحظية.",
+    p2Role: "نظام نقاط بيع",
+    p3Title: "قائمة فيلورا",
+    p3Desc: "قائمة رقمية للمقهى مربوطة مباشرة بقاعدة بيانات نظام البيع، فأي تحديث في المنتجات يظهر فورًا للزبون.",
+    p3Role: "قائمة رقمية",
+    p4Title: "ريساليت",
+    p4Desc: "موقع لشركة رحلات عمرة؛ يعرض تقييمات العملاء بنجوم ومؤشرات تفصيلية لبناء الثقة قبل الحجز.",
+    p4Role: "شركة رحلات",
+    p5Title: "الترّاكتور",
+    p5Desc: "موقع تدريب رياضي شخصي بالعربية RTL، بهوية بصرية صناعية وحركات تمرير مدروسة.",
+    p5Role: "موقع تدريب",
+    toolkitTitle: "الأدوات",
+    chipResponsive: "تصميم متجاوب",
+    chipRtl: "RTL / LTR وتعدد لغات",
+    footerRole: "مطوّر واجهات أمامية",
+    footerCta: "تواصل معي",
+    footerNote: "مبني بـ HTML و CSS و JavaScript فقط"
+  },
+  en: {
+    eyebrow: "Live systems dashboard",
+    name: "Abdulghani Mashael",
+    role: "Frontend developer — building web systems that ",
+    roleAccent: "actually run",
+    statement: "Computer programming graduate. Instead of talking about my work, here are six real websites and systems I designed and built from scratch — from the interface down to the database.",
+    chip1: "5 shipped projects",
+    heroCta1: "Get in touch now",
+    heroCta2: "View projects",
+    readoutLabel: "status.log",
+    stat1Label: "Shipped projects",
+    stat2Label: "Firebase-powered systems",
+    stat3Label: "Interface languages",
+    aboutEyebrow: "Personal profile",
+    aboutTitle: "About me",
+    aboutSubhead: "Profile",
+    aboutBio: "A frontend developer with an academic background in computer programming, known for strong organizational skills and a practical, adaptable approach to problem-solving. I work well independently or within a team to deliver results efficiently, and I'm always looking to grow my skill set and add real value to every project I take on.",
+    skill1: "Effective communication",
+    skill2: "Problem-solving & adaptability",
+    skill3: "Priority management",
+    skill4: "Team collaboration",
+    aboutLangsTitle: "Languages",
+    langAr: "Arabic",
+    langTr: "Turkish",
+    langEn: "English",
+    projectsTitle: "Live projects, not slideshows",
+    projectsNote: "Every link below is live right now",
+    live: "live",
+    visitSite: "Visit site",
+    tagEcom: "E-commerce",
+    tagMenu: "Digital menu",
+    tagResponsive: "Responsive",
+    tagTravel: "Travel",
+    tagReviews: "Reviews",
+    tagCoaching: "Coaching",
+    tagScroll: "Scroll FX",
+    tagAdmin: "Admin panel",
+    p1Title: "Velora Shop",
+    p1Desc: "My graduation project — a full Turkish fashion e-commerce store with cart, wishlist, and profile pages, wired to a complete admin panel.",
+    p1Role: "Graduation project",
+    p2Title: "Velora Cafe",
+    p2Desc: "A point-of-sale system for a demo cafe: staff PIN login, table management, a kitchen Kanban board, and live sales reports.",
+    p2Role: "Point-of-sale system",
+    p3Title: "Velora Menu",
+    p3Desc: "A digital menu for the cafe, reading straight from the POS database — any product update shows up for customers instantly.",
+    p3Role: "Digital menu",
+    p4Title: "Risalett",
+    p4Desc: "A site for an Umrah travel agency, built around a public wall of star ratings and category scores to build trust before booking.",
+    p4Role: "Travel agency",
+    p5Title: "El-Taractor",
+    p5Desc: "A personal training coaching site in Arabic (RTL), with an industrial visual identity and considered scroll animation.",
+    p5Role: "Coaching site",
+    toolkitTitle: "Toolkit",
+    chipResponsive: "Responsive design",
+    chipRtl: "RTL / LTR & i18n",
+    footerRole: "Frontend developer",
+    footerCta: "Get in touch",
+    footerNote: "Built with vanilla HTML, CSS and JavaScript"
+  },
+  tr: {
+    eyebrow: "Canlı sistemler panosu",
+    name: "Abdulghani Mashael",
+    role: "Frontend geliştirici — gerçekten ",
+    roleAccent: "çalışan sistemler kuruyorum",
+    statement: "Bilgisayar programlama mezunuyum. İşimi anlatmak yerine, sıfırdan tasarlayıp kodladığım altı gerçek web sitesini ve sistemini burada bulabilirsiniz — arayüzden veritabanına kadar.",
+    chip1: "5 yayında proje",
+    heroCta1: "Hemen iletişime geç",
+    heroCta2: "Projeleri gör",
+    readoutLabel: "status.log",
+    stat1Label: "Yayında proje",
+    stat2Label: "Firebase tabanlı sistem",
+    stat3Label: "Desteklenen arayüz dili",
+    aboutEyebrow: "Kişisel profil",
+    aboutTitle: "Hakkımda",
+    aboutSubhead: "Profil",
+    aboutBio: "Bilgisayar programlama alanında akademik bir geçmişe sahip bir frontend geliştiriciyim; güçlü organizasyon becerileri ve pratik, uyum sağlayabilen bir problem çözme yaklaşımıyla öne çıkıyorum. Bağımsız ya da bir ekip içinde verimli sonuçlar üretmeyi seviyorum ve her projeye gerçek bir değer katmak için becerilerimi sürekli geliştiriyorum.",
+    skill1: "Etkili iletişim",
+    skill2: "Problem çözme ve hızlı uyum",
+    skill3: "Öncelik yönetimi",
+    skill4: "Ekip çalışması",
+    aboutLangsTitle: "Diller",
+    langAr: "Arapça",
+    langTr: "Türkçe",
+    langEn: "İngilizce",
+    projectsTitle: "Sunum değil, canlı projeler",
+    projectsNote: "Aşağıdaki tüm bağlantılar şu anda çalışıyor",
+    live: "canlı",
+    visitSite: "Siteyi ziyaret et",
+    tagEcom: "E-ticaret",
+    tagMenu: "Dijital menü",
+    tagResponsive: "Duyarlı tasarım",
+    tagTravel: "Seyahat",
+    tagReviews: "Değerlendirmeler",
+    tagCoaching: "Koçluk",
+    tagScroll: "Kaydırma efekti",
+    tagAdmin: "Yönetim paneli",
+    p1Title: "Velora Shop",
+    p1Desc: "Bitirme projem — sepet, favoriler ve profil sayfaları olan tam bir Türk moda e-ticaret sitesi, eksiksiz bir yönetim paneline bağlı.",
+    p1Role: "Bitirme projesi",
+    p2Title: "Velora Cafe",
+    p2Desc: "Deneme kafe için POS sistemi: personel PIN girişi, masa yönetimi, mutfak Kanban panosu ve anlık satış raporları.",
+    p2Role: "POS sistemi",
+    p3Title: "Velora Menu",
+    p3Desc: "Kafenin dijital menüsü, doğrudan POS veritabanından okunuyor — ürünlerde yapılan her güncelleme müşteriye anında yansıyor.",
+    p3Role: "Dijital menü",
+    p4Title: "Risalett",
+    p4Desc: "Bir umre acentesi için hazırlanan site; yıldızlı değerlendirmeler ve kategori puanlarıyla rezervasyon öncesi güven inşa ediyor.",
+    p4Role: "Seyahat acentesi",
+    p5Title: "El-Taractor",
+    p5Desc: "Arapça (sağdan sola) kişisel antrenörlük sitesi; endüstriyel görsel kimlik ve özenli kaydırma animasyonlarıyla.",
+    p5Role: "Koçluk sitesi",
+    toolkitTitle: "Araç seti",
+    chipResponsive: "Duyarlı tasarım",
+    chipRtl: "RTL / LTR ve çoklu dil",
+    footerRole: "Frontend geliştirici",
+    footerCta: "Benimle iletişime geç",
+    footerNote: "Sadece HTML, CSS ve JavaScript ile yapıldı"
+  }
+};
+
+let currentLang = 'ar';
+let countersStarted = false;
+
+function setLang(lang){
+  currentLang = lang;
+  const dict = translations[lang];
+  document.documentElement.lang = lang;
+  document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    const key = el.getAttribute('data-i18n');
+    if (dict[key] !== undefined) el.textContent = dict[key];
+  });
+  document.querySelectorAll('.lang-pill').forEach(function(btn){
+    btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+  });
+}
+
+function animateCounters(){
+  if (countersStarted) return;
+  countersStarted = true;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('[data-count]').forEach(function(el){
+    const target = parseInt(el.getAttribute('data-count'), 10);
+    if (reduced){ el.textContent = target; return; }
+    let current = 0;
+    const step = Math.max(1, Math.round(target / 20));
+    const timer = setInterval(function(){
+      current += step;
+      if (current >= target){ current = target; clearInterval(timer); }
+      el.textContent = current;
+    }, 45);
+  });
+}
+
+setLang('ar');
+
+if ('IntersectionObserver' in window){
+  const statsObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting){ animateCounters(); statsObs.disconnect(); }
+    });
+  }, { threshold: 0.4 });
+  const readout = document.querySelector('.readout');
+  if (readout) statsObs.observe(readout);
+
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry, i){
+      if (entry.isIntersecting){
+        const el = entry.target;
+        const delay = Array.prototype.indexOf.call(el.parentElement ? el.parentElement.children : [], el);
+        el.style.transitionDelay = (Math.min(delay, 6) * 0.06) + 's';
+        el.classList.add('in-view');
+        revealObs.unobserve(el);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(function(el){ revealObs.observe(el); });
+} else {
+  animateCounters();
+  document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in-view'); });
+}
+</script>
+
+</body>
+</html>
